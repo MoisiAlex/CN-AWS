@@ -96,7 +96,7 @@ function subscribeToAgentEvents(agent) {
         
         var nonRoutableState = window.myCPP.agent.getAgentStates().filter(function (state) {
             return state.type === connect.AgentStateType.NOT_ROUTABLE;
-        })[0];
+        })[2];
         
     window.myCPP.agent.setState(nonRoutableState, {
     success: function () {
