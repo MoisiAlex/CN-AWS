@@ -76,8 +76,7 @@
         console.log("Subscribing to events for agent " + agent.getName());
         console.log("Agent is currently in status of " + agent.getStatus().name);
         agent.onError(handleErrors);
-        agent.onRefresh(handleAgentRefresh);
-
+       
     }
 
     function handleErrors(agent){
@@ -99,10 +98,6 @@
     });
         
         
-    }
-
-    function handleAgentRefresh(agent) {
-        console.log(agent.toSnapshot());
     }
 
 
