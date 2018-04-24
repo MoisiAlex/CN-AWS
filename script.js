@@ -93,8 +93,23 @@ function subscribeToAgentEvents(agent) {
     }
 
     function handleAgentOffline(agent) {
-       console.log('fart');
+        
+        var nonRoutableState = window.myCPP.agent.getAgentStates().filter(function (state) {
+            return state.type === connect.AgentStateType.NOT_ROUTABLE;
+        })[0];
+        
+    window.myCPP.agent.setState(nonRoutableState, {
+    success: function () {
+      logInfoMsg("Set agent status to ACW via Streams")
+        },
+    failure: function () {
+      logInfoMsg("Failed to set agent status to ACW via Streams")
+        }
+    });
+       
     }
+
+
 
 
 
