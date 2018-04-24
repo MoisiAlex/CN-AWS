@@ -1,7 +1,7 @@
  window.myCPP = window.myCPP || {};
 
     //replace with the CCP URL for the current Amazon Connect instance
-    var ccpUrl = "https://coachnet.awsapps.com/connect/ccp#/";
+    var ccpUrl = "https://demoinstance.awsapps.com/connect/ccp#/";
 
     connect.core.initCCP(containerDiv, {
         ccpUrl: ccpUrl,        
@@ -12,7 +12,8 @@
     });
 
     connect.contact(subscribeToContactEvents);  
-    
+    connect.agent(subscribeToAgentEvents);
+
 
     function subscribeToContactEvents(contact) {
         window.myCPP.contact = contact;
@@ -66,6 +67,50 @@
         old_tbody.innerHTML= "<!-- Contact attributes will go here-->";
     }
 
+
+
+function subscribeToAgentEvents(agent) {
+        window.myCPP.agent = agent;
+        agent.onError(handleErrors);
+        agent.onAfterCallWork(handleAfterWork);
+        agent.onOffline(handleAgentOffline);
+    }
+
+    function handleErrors(agent){
+        var nonRoutableState = window.myCPP.agent.getAgentStates().filter(function (state) {
+            return state.type === connect.AgentStateType.NOT_ROUTABLE;
+        })[0];
+        
+        console.log(nonRoutableState);
+    }
+
+    function handleAfterWork(agent) {
+        var nonRoutableState = window.myCPP.agent.getAgentStates().filter(function (state) {
+            return state.type === connect.AgentStateType.NOT_ROUTABLE;
+        })[0];
+        
+        console.log(nonRoutableState);
+    }
+
+    function handleAgentOffline(agent) {
+       console.log('fart');
+    }
+
+
+
+    function goOffline() {
+        var offlineState = window.myCPP.agent.getAgentStates().filter(function (state) {
+            return state.type === connect.AgentStateType.OFFLINE;
+        })[0];
+        window.myCPP.agent.setState(offlineState, {
+            success: function () {
+                logInfoMsg("Set agent status to Offline via Streams")
+            },
+            failure: function () {
+                logInfoMsg("Failed to set agent status to Offline via Streams")
+            }
+        });
+    }
 
     function logMsgToScreen(msg) {
         logMsgs.innerHTML =  new Date().toLocaleTimeString() + ' : ' + msg + '<br>' + logMsgs.innerHTML;
