@@ -32,6 +32,7 @@
         updateQueue(contact.getQueue().name);
         updateContactAttribute(contact.getAttributes());    
         contact.onEnded(clearContactAttribute);
+        
     }
 
     function updateQueue(msg){
@@ -69,63 +70,41 @@
 
 
 
-function subscribeToAgentEvents(agent) {
+    function subscribeToAgentEvents(agent) {
         window.myCPP.agent = agent;
+        
+        console.log("Subscribing to events for agent " + agent.getName());
+        console.log("Agent is currently in status of " + agent.getStatus().name);
         agent.onError(handleErrors);
-        agent.onAfterCallWork(handleAfterWork);
-        agent.onOffline(handleAgentOffline);
+        agent.onRefresh(handleAgentRefresh);
+
     }
 
     function handleErrors(agent){
-        var nonRoutableState = window.myCPP.agent.getAgentStates().filter(function (state) {
-            return state.type === connect.AgentStateType.NOT_ROUTABLE;
-        })[0];
         
-        console.log(nonRoutableState);
-    }
-
-    function handleAfterWork(agent) {
-        var nonRoutableState = window.myCPP.agent.getAgentStates().filter(function (state) {
-            return state.type === connect.AgentStateType.NOT_ROUTABLE;
-        })[0];
+        console.log(agent.toSnapshot());
+        console.log(window.myCPP.contact.getConnections());
         
-        console.log(nonRoutableState);
-    }
-
-    function handleAgentOffline(agent) {
-        
-        var nonRoutableState = window.myCPP.agent.getAgentStates().filter(function (state) {
+    var nonRoutableState = window.myCPP.agent.getAgentStates().filter(function (state) {
             return state.type === connect.AgentStateType.NOT_ROUTABLE;
-        })[1];
+        })[3];
         
     window.myCPP.agent.setState(nonRoutableState, {
     success: function () {
-      logInfoMsg("Set agent status to ACW via Streams")
+      logInfoMsg("Set agent status to custom status via Streams")
         },
     failure: function () {
-      logInfoMsg("Failed to set agent status to ACW via Streams")
+      logInfoMsg("Failed to set agent status to custom status via Streams")
         }
     });
-       
+        
+        
     }
 
-
-
-
-
-    function goOffline() {
-        var offlineState = window.myCPP.agent.getAgentStates().filter(function (state) {
-            return state.type === connect.AgentStateType.OFFLINE;
-        })[0];
-        window.myCPP.agent.setState(offlineState, {
-            success: function () {
-                logInfoMsg("Set agent status to Offline via Streams")
-            },
-            failure: function () {
-                logInfoMsg("Failed to set agent status to Offline via Streams")
-            }
-        });
+    function handleAgentRefresh(agent) {
+        console.log(agent.toSnapshot());
     }
+
 
     function logMsgToScreen(msg) {
         logMsgs.innerHTML =  new Date().toLocaleTimeString() + ' : ' + msg + '<br>' + logMsgs.innerHTML;
